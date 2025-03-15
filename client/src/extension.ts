@@ -1,5 +1,5 @@
 import * as path from "path";
-import { workspace, ExtensionContext } from "vscode";
+import { workspace, ExtensionContext, window } from "vscode";
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -12,7 +12,7 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
   // Server executable path
   const serverPath = context.asAbsolutePath(
-    path.join("server", "my-language-server")
+    path.join("..", "server", "my-language-server") // Go up one directory to find server folder
   );
 
   // Server options
@@ -29,12 +29,15 @@ export function activate(context: ExtensionContext) {
 
   // Client options
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: "file", language: "mylanguage" }],
+    documentSelector: [
+      { scheme: "file", language: "mylanguage" },
+      { scheme: "file", language: "yaml" }, // Add this for YAML support
+    ],
     synchronize: {
-      fileEvents: workspace.createFileSystemWatcher("**/.ml"),
+      fileEvents: workspace.createFileSystemWatcher("**/*.{yaml,yml}"), // Update file watcher
     },
+    outputChannel: window.createOutputChannel("My Language Server"),
   };
-
   // Create and start client
   client = new LanguageClient(
     "myLanguageServer",

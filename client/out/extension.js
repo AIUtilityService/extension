@@ -41,7 +41,8 @@ const node_1 = require("vscode-languageclient/node");
 let client;
 function activate(context) {
     // Server executable path
-    const serverPath = context.asAbsolutePath(path.join("server", "my-language-server"));
+    const serverPath = context.asAbsolutePath(path.join("..", "server", "my-language-server") // Go up one directory to find server folder
+    );
     // Server options
     const serverOptions = {
         run: {
@@ -55,10 +56,14 @@ function activate(context) {
     };
     // Client options
     const clientOptions = {
-        documentSelector: [{ scheme: "file", language: "mylanguage" }],
+        documentSelector: [
+            { scheme: "file", language: "mylanguage" },
+            { scheme: "file", language: "yaml" }, // Add this for YAML support
+        ],
         synchronize: {
-            fileEvents: vscode_1.workspace.createFileSystemWatcher("**/.ml"),
+            fileEvents: vscode_1.workspace.createFileSystemWatcher("**/*.{yaml,yml}"), // Update file watcher
         },
+        outputChannel: vscode_1.window.createOutputChannel("My Language Server"),
     };
     // Create and start client
     client = new node_1.LanguageClient("myLanguageServer", "My Language Server", serverOptions, clientOptions);
