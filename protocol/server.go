@@ -17,13 +17,15 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 }
 
 func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-	// For full sync, we just need the last change
 	if len(params.ContentChanges) > 0 {
-		documentManager.UpdateDocument(
-			params.TextDocument.URI,
-			params.ContentChanges[len(params.ContentChanges)-1].Text,
-			params.TextDocument.Version,
-		)
+		contentChange := params.ContentChanges[len(params.ContentChanges)-1]
+		if textChange, ok := contentChange.(protocol.TextDocumentContentChangeEvent); ok {
+			documentManager.UpdateDocument(
+				params.TextDocument.URI,
+				textChange.Text,
+				params.TextDocument.Version,
+			)
+		}
 	}
 	return nil
 }

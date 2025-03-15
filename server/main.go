@@ -1,9 +1,11 @@
 package main
 
 import (
+	"kro-extenstion/protocol"
+
 	"github.com/tliron/commonlog"
 	"github.com/tliron/glsp"
-	protocol "github.com/tliron/glsp/protocol_3_16"
+	lspProtocol "github.com/tliron/glsp/protocol_3_16"
 	"github.com/tliron/glsp/server"
 
 	_ "github.com/tliron/commonlog/simple"
@@ -13,45 +15,48 @@ const lsName = "kro-language-server"
 
 var (
 	version string = "0.0.1"
-	handler protocol.Handler
+	handler lspProtocol.Handler
 )
 
 func main() {
 	// Configure logging
 	commonlog.Configure(1, nil)
 
-	handler = protocol.Handler{
+	handler = lspProtocol.Handler{
 		Initialize:            initialize,
 		Initialized:           initialized,
 		Shutdown:              shutdown,
-		TextDocumentDidOpen:   textDocumentDidOpen,
-		TextDocumentDidChange: textDocumentDidChange,
-		TextDocumentDidClose:  textDocumentDidClose,
+		TextDocumentDidOpen:   protocol.TextDocumentDidOpen,
+		TextDocumentDidChange: protocol.TextDocumentDidChange,
+		TextDocumentDidClose:  protocol.TextDocumentDidClose,
 	}
 
 	server := server.NewServer(&handler, lsName, false)
 	server.RunStdio()
 }
 
-func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, error) {
+func initialize(context *glsp.Context, params *lspProtocol.InitializeParams) (any, error) {
 	capabilities := handler.CreateServerCapabilities()
 
-	// Set specific capabilities
-	capabilities.TextDocumentSync = &protocol.TextDocumentSyncOptions{
-		OpenClose: true,
-		Change:    protocol.TextDocumentSyncKindFull,
+	openClose := true
+	changeValue := lspProtocol.TextDocumentSyncKindFull
+
+	// Set specific capabilities with manual pointer values
+	capabilities.TextDocumentSync = &lspProtocol.TextDocumentSyncOptions{
+		OpenClose: &openClose,
+		Change:    &changeValue,
 	}
 
-	return protocol.InitializeResult{
+	return lspProtocol.InitializeResult{
 		Capabilities: capabilities,
-		ServerInfo: &protocol.InitializeResultServerInfo{
+		ServerInfo: &lspProtocol.InitializeResultServerInfo{
 			Name:    lsName,
 			Version: &version,
 		},
 	}, nil
 }
 
-func initialized(context *glsp.Context, params *protocol.InitializedParams) error {
+func initialized(context *glsp.Context, params *lspProtocol.InitializedParams) error {
 	return nil
 }
 
