@@ -21,14 +21,21 @@ var (
 func main() {
 	// Configure logging
 	commonlog.Configure(1, nil)
+	log := commonlog.GetLogger("server")
 
 	handler = lspProtocol.Handler{
-		Initialize:            initialize,
-		Initialized:           initialized,
-		Shutdown:              shutdown,
-		TextDocumentDidOpen:   protocol.TextDocumentDidOpen,
-		TextDocumentDidChange: protocol.TextDocumentDidChange,
-		TextDocumentDidClose:  protocol.TextDocumentDidClose,
+		Initialize:  initialize,
+		Initialized: initialized,
+		Shutdown:    shutdown,
+		TextDocumentDidOpen: func(context *glsp.Context, params *lspProtocol.DidOpenTextDocumentParams) error {
+			log.Infof("Document opened: %s", params.TextDocument.URI)
+			return protocol.TextDocumentDidOpen(context, params)
+		},
+		TextDocumentDidChange: func(context *glsp.Context, params *lspProtocol.DidChangeTextDocumentParams) error {
+			log.Infof("Document changed: %s", params.TextDocument.URI)
+			return protocol.TextDocumentDidChange(context, params)
+		},
+		TextDocumentDidClose: protocol.TextDocumentDidClose,
 	}
 
 	server := server.NewServer(&handler, lsName, false)

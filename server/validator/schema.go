@@ -46,8 +46,25 @@ func validateResource(resource map[string]interface{}) error {
 	if _, ok := resource["name"].(string); !ok {
 		return fmt.Errorf("resource missing name")
 	}
-	if _, ok := resource["type"].(string); !ok {
+
+	resourceType, ok := resource["type"].(string)
+	if !ok {
 		return fmt.Errorf("resource missing type")
 	}
+
+	// Add validation for resource type
+	validTypes := []string{"compute", "storage", "network", "database"}
+	isValidType := false
+	for _, validType := range validTypes {
+		if resourceType == validType {
+			isValidType = true
+			break
+		}
+	}
+
+	if !isValidType {
+		return fmt.Errorf("invalid resource type: %s", resourceType)
+	}
+
 	return nil
 }
