@@ -29,12 +29,9 @@ export function activate(context: ExtensionContext) {
 
   // Client options
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [
-      { scheme: "file", language: "mylanguage" },
-      { scheme: "file", language: "yaml" }, // Add this for YAML support
-    ],
+    documentSelector: [{ scheme: "file", language: "yaml" }],
     synchronize: {
-      fileEvents: workspace.createFileSystemWatcher("**/*.{yaml,yml}"), // Update file watcher
+      fileEvents: workspace.createFileSystemWatcher("**/*.{yaml,yml}"),
     },
     outputChannel: window.createOutputChannel("My Language Server"),
   };

@@ -56,12 +56,9 @@ function activate(context) {
     };
     // Client options
     const clientOptions = {
-        documentSelector: [
-            { scheme: "file", language: "mylanguage" },
-            { scheme: "file", language: "yaml" }, // Add this for YAML support
-        ],
+        documentSelector: [{ scheme: "file", language: "yaml" }],
         synchronize: {
-            fileEvents: vscode_1.workspace.createFileSystemWatcher("**/*.{yaml,yml}"), // Update file watcher
+            fileEvents: vscode_1.workspace.createFileSystemWatcher("**/*.{yaml,yml}"),
         },
         outputChannel: vscode_1.window.createOutputChannel("My Language Server"),
     };

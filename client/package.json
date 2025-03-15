@@ -14,13 +14,12 @@
   "contributes": {
     "languages": [
       {
-        "id": "mylanguage",
+        "id": "yaml",
         "extensions": [
           ".yaml",
           ".yml"
         ],
         "aliases": [
-          "Resource Graph",
           "YAML"
         ]
       }
